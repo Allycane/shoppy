@@ -22,7 +22,14 @@ export default function Signup() {
     if (!form.id) { setErrors(p => ({ ...p, id: '아이디를 입력해주세요' })); return; }
     if (!form.pwd) { setErrors(p => ({ ...p, pwd: '비밀번호를 입력해주세요' })); return; }
     if (form.pwd !== form.cpwd) { setErrors(p => ({ ...p, cpwd: '비밀번호가 일치하지 않습니다' })); return; }
-    alert('회원가입 성공!!');
+    // alert('회원가입 성공!!');
+
+    // DB 연동 로직 - axiosPost 함수를 추가
+    console.log('form ------->', form);
+
+
+
+
     navigate('/login');
   };
 

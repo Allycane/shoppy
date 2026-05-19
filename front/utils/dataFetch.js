@@ -14,10 +14,10 @@ export const groupByRows = (array, number) => {
 /**
  * public/data 폴더의 JSON 파일을 fetch
  */
-// export const axiosData = async (url) => {
-//   const response = await axios.get(url);
-//   return response.data;
-// };
+export const axiosData = async (url) => {
+  const response = await axios.get(url);
+  return response.data;
+};
 
 /**
  * 서버 연동을 위한 HTTP 메소드 CRUD 정의

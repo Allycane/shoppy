@@ -11,6 +11,8 @@ export function ImageList({imgList, className}) {
                     {classType === 'review'?
                     <img src= {`/images/${img}`} />
                     : <img src= {`/images/${img}`} /> }
+                    {/* // <img src= {img} />
+                    // : <img src= {img} /> } */}
                 </li>
             )}
         </ul>

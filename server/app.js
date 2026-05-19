@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import productsRouter from './01_routes/products.js';
+import returnRouter from './01_routes/return.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 
 // 라우팅
 app.use('/products', productsRouter);
+app.use('/return', returnRouter);
 
 // 실행
 app.listen(PORT, () => {

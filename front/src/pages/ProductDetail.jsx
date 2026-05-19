@@ -27,6 +27,8 @@ export default function ProductDetail() {
   if (!product) return <div>로딩 중...</div>;
 
   const imgList = product.imgList ?? [];
+  // console.log(product);
+  
 
   return (
     <div className="content">

@@ -18,3 +18,18 @@ export const getProduct = async (req, res, next) => {
     // console.log('p------->', product);
     res.json(product);
 }
+
+export const getReview = async (req, res, next) => {
+    // const review = await repository.getReview();
+    console.log('상품 리뷰');
+    res.json(review);
+}
+
+/**
+ * 상품 QnA
+ */
+export const getQna = async (req, res, next) => {
+    // console.log('controller qna---->', req.params.pid);
+    const qna = await repository.getQna(req.params.pid);
+    res.json(qna);
+}
