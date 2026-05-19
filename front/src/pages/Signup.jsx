@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { axiosPost } from '../../utils/dataFetch.js';
 
 const initForm = (keys) => keys.reduce((acc, k) => ({ ...acc, [k]: '' }), {});
 
 export default function Signup() {
   const navigate = useNavigate();
+  const idRef = useRef(null);
   const initArray = ['id', 'pwd', 'cpwd', 'name', 'phone', 'emailName', 'emailDomain'];
   const [form, setForm] = useState(initForm(initArray));
   const [errors, setErrors] = useState(initForm(initArray));
@@ -19,21 +21,38 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!form.id) { setErrors(p => ({ ...p, id: '아이디를 입력해주세요' })); return; }
     if (!form.pwd) { setErrors(p => ({ ...p, pwd: '비밀번호를 입력해주세요' })); return; }
     if (form.pwd !== form.cpwd) { setErrors(p => ({ ...p, cpwd: '비밀번호가 일치하지 않습니다' })); return; }
-    // alert('회원가입 성공!!');
-
-    // DB 연동 로직 - axiosPost 함수를 추가
-    console.log('form ------->', form);
-
-
-
-
-    navigate('/login');
+    
+    
+    try {
+      const result = await axiosPost('/member/signup', form);   
+      if(result.isSignup) navigate('/login');      
+    } catch (error) {
+      console.log('Signup Error ::', error);      
+    }
   };
 
-  const handleIdCheck = () => alert(`"${form.id}" 사용 가능한 아이디입니다.`);
+  const handleIdCheck = async() => {
+    //1. id 유효성 체크
+    if(idRef.current.value === '') {
+      alert('아이디를 입력해주세요');
+      idRef.current.focus();
+      return false;      
+    } else {
+      //2. 서버에 id 전송 
+      const result = await axiosPost('/member/idCheck', {"id": form.id.trim()}); 
+      if(result.isFind) {
+        alert('이미 사용중인 아이디 입니다. 다시 입력해주세요');
+        idRef.current.focus();
+      } else {
+        alert('사용이 가능한 아이디 입니다.');
+        //패스워드 입력 위치로 포커스 이동
+      }
+    }
+  }
 
   return (
     <div className="content">
@@ -45,7 +64,13 @@ export default function Signup() {
               <label htmlFor="id"><b>아이디</b></label>
               {errors.id && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.id}</span>}
               <div>
-                <input type="text" id="id" name="id" value={form.id} onChange={handleChangeForm} placeholder="아이디 입력(6~20자)" />
+                <input  type="text" 
+                        id="id" name="id" 
+                        value={form.id} 
+                        ref={idRef}
+                        onChange={handleChangeForm} 
+                        placeholder="아이디 입력(6~20자)"
+                        />
                 <button type="button" onClick={handleIdCheck}> 중복확인</button>
               </div>
             </li>

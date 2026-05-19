@@ -3,23 +3,23 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import productsRouter from './01_routes/products.js';
 import returnRouter from './01_routes/return.js';
+import memberRouter from './01_routes/member.js';
 
 dotenv.config();
 
 const PORT = process.env.SERVER_PORT || 9000;
-// 객체 생성
 const app = express();
 
-// 미들웨어 -> 공통적인 작업
+//미들웨어 -> 공통작업 정의
 app.use(cors());
 app.use(express.json());
-// app.use(express.urlencoded({extended: false}));
 
-// 라우팅
+//라우팅 작업
 app.use('/products', productsRouter);
 app.use('/return', returnRouter);
+app.use('/member', memberRouter);
 
-// 실행
+
 app.listen(PORT, () => {
-    console.log(`${PORT}포트 서버 실행 완료!!`);
-})
+    console.log(`서버 실행 => ${PORT}`);    
+});

@@ -43,6 +43,27 @@ select rid, title, description, list from product_return;
 select * from member;
 desc member;
 
+select * from member;
+
+select count(id) as isFInd from member where id = 'test';
+
+-- select count(*) from member where id = 'test' and pwd = '1234';
+
+select pwd, role from member where id = 'test';
+
+show tables;
+desc cart;
+select * from cart;
+select * from member;
+select * from product;
+
+-- 어떤 고객이 어떤 상품을 몇 개 구입했는지
+select * from view_cartlist;
+
+select * from support;
+
+
+
 
 
 
