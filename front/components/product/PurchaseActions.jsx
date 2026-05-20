@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PiGiftThin } from 'react-icons/pi';
 import { useAuthStore } from '@/store/authStore.js';
 import { cartItemsCheck } from '@/utils/cart.js';
+import { axiosPost } from '../../utils/dataFetch.js';
 
 export default function PurchaseActions({ pid }) {
   const navigate = useNavigate();
@@ -10,14 +11,19 @@ export default function PurchaseActions({ pid }) {
   const [showCartPopup, setShowCartPopup] = useState(false);
   const isLogin = useAuthStore((s) => s.isLogin);
   const cartItems = useAuthStore((s) => s.cartItems); // [{pid:3, size:M, qty:5}]
+  const userId = useAuthStore((s) => s.userId);
+  const cartCount = useAuthStore((s) => s.setCartCount);
 
-  const handleAddCart = () => {
-    const cartItem = { pid: String(pid), size, qty: 1 };
+  const handleAddCart = async() => {
+    const cartItem = { pid: String(pid), size, qty: 1, userId };
+    // console.log('cartItem ---->', cartItem);
 
-    // cartItems = [{pid:3, size:M, qty:5}]
-    // cartItem = {pid:3, size:M, qty:1}
-    const updated = cartItemsCheck(cartItems, cartItem);
-    useAuthStore.getState().setCartItems(updated);
+    // insert를 진행해야 하기 때문에 post를 사용한다
+    const result = await axiosPost('/carts/add', cartItem);
+    if (result.isAdd) {
+      cartCount();
+    }
+    // useAuthStore.getState().setCartItems(updated);
     setShowCartPopup(true);
   };
 
