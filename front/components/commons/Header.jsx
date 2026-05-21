@@ -14,6 +14,7 @@ export default function Header() {
   const authChecked = useAuthStore((s) => s.authChecked);
   const cartCount = useAuthStore((s) => s.cartCount);
   const initCartCount = useAuthStore((s) => s.initCartCount);
+  const isUpdateFlag = useAuthStore((s) => s.isUpdateFlag);
 
   useEffect(() => {
     // cart DB 연동
@@ -24,7 +25,7 @@ export default function Header() {
       result.count ? initCartCount(parseInt(result.count)) : initCartCount(0);
     }
     axiosData();
-  }, [isLogin]);
+  }, [isLogin, isUpdateFlag]);
 
   const handleLogout = () => {
     logout();

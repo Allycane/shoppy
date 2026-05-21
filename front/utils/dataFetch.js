@@ -34,3 +34,15 @@ export const axiosPost = async (path, data) => {
   const res = await axios.post(url, data);
   return res.data;
 }
+
+export const axiosPut = async (path, data) => {
+  const url = `http://localhost:9000${path}`;
+  const res = await axios.put(url, data);
+  return res.data;
+}
+
+export const axiosDelete = async (path, data) => {
+  const url = `http://localhost:9000${path}`; // get 혹은 delete -> config 객체에 담아서 전송
+  const res = await axios.delete(url, {"data" : data});
+  return res.data;
+}

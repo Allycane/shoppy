@@ -15,10 +15,11 @@ export const getFindItem = async(cartItem) => {
 }
 
 /**
- * 기존 카트 수량 업데이트
+ * 기존 카트 수량 업데이트 - 장바구니 ㅜ가, 장바구니 리스트 수량 업데이트
  */
-export const getQtyUpdate = async (cid) => {
-    const sql = `UPDATE cart SET qty = qty + 1 WHERE cid = ?`;
+export const getQtyUpdate = async (cid, type) => {
+    const param = (type === '-') ? 'qty - 1' : 'qty + 1';
+    const sql = `UPDATE cart SET qty = ${param} WHERE cid = ?`;
     const [rows] = await pool.execute(sql, [cid]);
     return rows;
 }
@@ -42,5 +43,11 @@ export const getCount = async(userId) => {
 export const getList = async (userId) => {
     const sql = `SELECT * FROM view_cartlist WHERE id = ?`;
     const [rows] = await pool.execute(sql, [userId]);
+    return rows;
+}
+
+export const getDelete = async (cid) => {
+    const sql = `delete from cart where cid = ?`;
+    const [rows] = await pool.execute(sql, [cid]);
     return rows;
 }

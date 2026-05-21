@@ -3,16 +3,18 @@ import { useNavigate, Link } from 'react-router-dom';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { useAuthStore } from '@/store/authStore.js';
 import { cartItemsCheck, updateCartItemsQty, getTotalPrice, cartItemsAddInfo } from '@/utils/cart.js';
-import { axiosPost } from '../../utils/dataFetch.js';
+import { axiosDelete, axiosPost, axiosPut } from '../../utils/dataFetch.js';
 
 export default function Cart() {
   const navigate = useNavigate();
   const [cartList, setCartList] = useState([]);
   const [products, setProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const cartItems = useAuthStore((s) => s.cartItems);
+  const [isUpdate, setIsUpdate] = useState(false);
   const setCartCount = useAuthStore((s) => s.setCartCount);
   const userId = useAuthStore((s) => s.userId);
+  const setIsUpdateFlag = useAuthStore((s) => s.setIsUpdateFlag);
+  const setCartListStore = useAuthStore((s) => s.setCartList);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -20,7 +22,8 @@ export default function Cart() {
       // const list = await res.json();
       const list = await axiosPost('/carts/list', {"userId" : userId});
       // console.log('list ----->', list);
-      setCartList(list)
+      setCartList(list);
+      setCartListStore(list);
       setTotalPrice(list[0].total_price);
 
       // setProducts(list);
@@ -29,18 +32,31 @@ export default function Cart() {
       // setTotalPrice(getTotalPrice(list, cartItems));
     };
     fetchProducts();
-  }, [cartItems]);
+  }, [isUpdate]);
 
-  const handleUpdateQty = (cid, type) => {
-    const updated = updateCartItemsQty(cartItems, cid, type);
-    useAuthStore.getState().setCartItems(updated);
-    setCartCount(updated.reduce((sum, i) => sum + i.qty, 0));
+  const handleUpdateQty = async(cid, type) => {
+    // const updated = updateCartItemsQty(cartItems, cid, type);
+    // useAuthStore.getState().setCartItems(updated);
+    // setCartCount(updated.reduce((sum, i) => sum + i.qty, 0));
+
+    // 업데이트 = put 사용을 권장 : 동일한 패스여도 라우트에서 별도로 구분함
+    const result = await axiosPut('/carts/qty', {cid, type});
+    if (result.isUpdate) {
+      setIsUpdate(!isUpdate); // 장바구니 리스트 재호출
+      setIsUpdateFlag(); // 장바구니 카운트 재호출 -> useAuthStore -> Header
+    }
   };
 
-  const handleDeleteItem = (cid) => {
-    const updated = cartItems.filter(item => item.cid !== cid);
-    useAuthStore.getState().setCartItems(updated);
-    setCartCount(updated.reduce((sum, i) => sum + i.qty, 0));
+  const handleDeleteItem = async(cid) => {
+    // const updated = cartItems.filter(item => item.cid !== cid);
+    // useAuthStore.getState().setCartItems(updated);
+    // setCartCount(updated.reduce((sum, i) => sum + i.qty, 0));
+
+    const result = await axiosDelete('/carts/delete', {cid});
+    if(result.isDelete) {
+      setIsUpdate(!isUpdate);
+      setIsUpdateFlag();
+    }
   };
 
   return (

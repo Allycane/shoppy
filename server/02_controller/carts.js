@@ -37,3 +37,20 @@ export const getList = async (req, res, next) => {
     // console.log(req.body.userId);
     res.json(list);
 }
+
+/**
+ * 장바구니 상품 수 업데이트
+ */
+export const getQtyUpdate = async (req, res, next) => {
+    const { cid, type } = req.body
+    const result = await repository.getQtyUpdate(cid, type);
+    res.json({"isUpdate" : result.affectedRows});
+}
+
+/** 
+ * 장바구니 삭제
+*/
+export const getDelete = async (req, res,next) => {
+    const result = await repository.getDelete(req.body.cid);
+    res.json({"isDelete" : result.affectedRows})
+}

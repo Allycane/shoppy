@@ -62,7 +62,11 @@ select * from view_cartlist;
 
 select * from support;
 
+select * from cart where id = 'testaccount';
 
+select * from member where id = 'testaccount';
+show tables;
+select * from product;
 
 
 
