@@ -5,6 +5,7 @@ import productsRouter from './01_routes/products.js';
 import returnRouter from './01_routes/return.js';
 import memberRouter from './01_routes/member.js';
 import cartsRouter from './01_routes/carts.js';
+import kakaoRouter from './01_routes/kakao.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use('/products', productsRouter);
 app.use('/return', returnRouter);
 app.use('/member', memberRouter);
 app.use('/carts', cartsRouter);
+app.use('/kakao', kakaoRouter);
 
 
 app.listen(PORT, () => {

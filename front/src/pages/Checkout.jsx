@@ -1,9 +1,18 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useAuthStore } from '@/store/authStore.js';
 import { cartItemsAddInfo, getTotalPrice } from '@/utils/cart.js';
+import { v4 as uuidv4 } from 'uuid';
+import { axiosPost } from '../../utils/dataFetch.js';
+import QRModal from '../../components/commons/QRModal.jsx';
 
 export default function Checkout() {
+  const userId = useAuthStore((s) => s.userId);
   const cartList = useAuthStore((s) => s.cartList);
+  const cartCount = useAuthStore((s) => s.cartCount);
+
+  const [showModal, setShowModal] = useState(false);
+
+
   const [totalPrice, setTotalPrice] = useState(cartList[0].total_price);
   const [terms, setTerms] = useState(false);
   const [privacy, setPrivacy] = useState(false);
@@ -13,6 +22,8 @@ export default function Checkout() {
     zipcode: '12345', address1: '서울시 강남구 역삼동',
     address2: '123', memo: '문앞',
   });
+
+  const [qrUrl, setQrUrl] = useState(null);
 
   // useEffect(() => {
   //   const fetchProducts = async () => {
@@ -26,12 +37,38 @@ export default function Checkout() {
   // }, [cartItems]);
 
 
-  const handlePayment = () => {
+  const handlePayment = async() => {
     if (!terms || !privacy) {
       alert('필수 약관에 모두 동의해야 결제가 가능합니다.');
       return;
     }
-    alert('결제 기능은 준비 중입니다.');
+
+    // 카카오페이 결제 준비 호출
+    // orderId, userId, item_name, quantity, total_amount
+    // orderId - uuid 패키지 설치 및 사용
+    try{
+      const orderId = uuidv4();
+      const item_name = cartList.length > 1 ? cartList[0].name + ' 등...' : cartList[0].name;
+      const quantity = cartCount;
+      const total_amount = totalPrice;
+
+      // console.log(orderId, userId, item_name, quantity, total_amount);
+
+      const orderData = { orderId, userId, item_name, quantity, total_amount };
+      const result = await axiosPost('/kakao/ready', orderData);
+      const { tid, next_redirect_mobile_url } = result;
+
+      if (tid) {
+        setQrUrl(next_redirect_mobile_url);
+        setShowModal(true);
+
+        setTimeout(() => setShowModal(false), 15000);
+      }
+    }
+    catch(error) {
+      console.log('/kakao/ready :: error ---->', error);
+    }
+
   };
 
   return (
@@ -105,6 +142,23 @@ export default function Checkout() {
         <label htmlFor="privacy"> 개인정보 국외 이전 동의</label>
       </div>
       <button className="pay-button" onClick={handlePayment}>결제하기</button>
+
+      { showModal && 
+        (
+          <QRModal 
+            qrUrl = {qrUrl}
+            amount = {totalPrice}
+            onClose = {() => setShowModal(false)}
+            />
+        )
+      
+      
+      }
+
+
+
+
+
     </div>
   );
 }
